@@ -4,10 +4,11 @@ namespace DesafioFundamentos.Models
     {
         private decimal precoInicial = 0;
         private decimal precoPorHora = 0;
-        private List<string> veiculos = new List<string>();
+        private Dictionary<string, DateTime> veiculos = new Dictionary<string, DateTime>();
 
         public Estacionamento(decimal precoInicial, decimal precoPorHora)
         {
+            // o this indica que estamos referenciando o atributo da classe
             this.precoInicial = precoInicial;
             this.precoPorHora = precoPorHora;
         }
@@ -15,31 +16,49 @@ namespace DesafioFundamentos.Models
         public void AdicionarVeiculo()
         {
             // TODO: Pedir para o usuário digitar uma placa (ReadLine) e adicionar na lista "veiculos"
-            // *IMPLEMENTE AQUI*
             Console.WriteLine("Digite a placa do veículo para estacionar:");
+            string placa = Console.ReadLine().ToUpper();
+
+            Console.WriteLine("Digite a hora de entrada do veículo (formato HH:mm):");
+
+            DateTime horaEntrada;
+
+            while (!DateTime.TryParseExact(Console.ReadLine(), "HH:mm", null, System.Globalization.DateTimeStyles.None, out horaEntrada))
+            {
+            Console.WriteLine(" Formato inválido! Digite novamente no formato HH:mm (ex: 08:30):");
+            }
+
+            veiculos.Add(placa, horaEntrada);
+            
+            Console.WriteLine($"Veículo {placa} adicionado com sucesso ás {horaEntrada}");
+
+            
         }
 
         public void RemoverVeiculo()
         {
             Console.WriteLine("Digite a placa do veículo para remover:");
+            string placa = Console.ReadLine().ToUpper();
 
-            // Pedir para o usuário digitar a placa e armazenar na variável placa
-            // *IMPLEMENTE AQUI*
-            string placa = "";
-
-            // Verifica se o veículo existe
-            if (veiculos.Any(x => x.ToUpper() == placa.ToUpper()))
+            // o metodo contaiskey verifica se a placa existe 
+            if (veiculos.ContainsKey(placa))
             {
-                Console.WriteLine("Digite a quantidade de horas que o veículo permaneceu estacionado:");
+            Console.WriteLine("Digite a hora de entrada do veículo (formato HH:mm):");
 
-                // TODO: Pedir para o usuário digitar a quantidade de horas que o veículo permaneceu estacionado,
-                // TODO: Realizar o seguinte cálculo: "precoInicial + precoPorHora * horas" para a variável valorTotal                
-                // *IMPLEMENTE AQUI*
-                int horas = 0;
-                decimal valorTotal = 0; 
+            DateTime horaSaida;
 
-                // TODO: Remover a placa digitada da lista de veículos
-                // *IMPLEMENTE AQUI*
+            while (!DateTime.TryParseExact(Console.ReadLine(), "HH:mm", null, System.Globalization.DateTimeStyles.None, out horaSaida))
+            {
+            Console.WriteLine(" Formato inválido! Digite novamente no formato HH:mm (ex: 08:30):");
+            }
+
+                DateTime horaEntrada = veiculos[placa];
+                TimeSpan tempoEstacionado = horaSaida - horaEntrada;
+
+                int horas = (int)Math.Ceiling(tempoEstacionado.TotalHours);
+
+                decimal valorTotal = precoInicial + (precoPorHora * horas);
+                veiculos.Remove(placa);
 
                 Console.WriteLine($"O veículo {placa} foi removido e o preço total foi de: R$ {valorTotal}");
             }
@@ -55,8 +74,10 @@ namespace DesafioFundamentos.Models
             if (veiculos.Any())
             {
                 Console.WriteLine("Os veículos estacionados são:");
-                // TODO: Realizar um laço de repetição, exibindo os veículos estacionados
-                // *IMPLEMENTE AQUI*
+                foreach (var veiculo in veiculos)
+                {
+                    Console.WriteLine($"Placa: {veiculo.Key}, Hora de Entrada: {veiculo.Value}");
+                }
             }
             else
             {
